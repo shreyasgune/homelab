@@ -1,0 +1,22 @@
+version: "3.9"
+
+
+services:
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
+    # network_mode: "host" ##only on linux
+    ports:
+      - "80:80"
+      # - "8443:8443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./site:/srv:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+
+volumes:
+  caddy_data:
+  caddy_config:

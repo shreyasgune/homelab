@@ -1,0 +1,4 @@
+kenora-pc.rya-pence.ts.net {
+    tls internal
+    reverse_proxy homepage:3000
+}
