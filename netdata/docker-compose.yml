@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  netdata:
+    image: netdata/netdata:stable
+    container_name: netdata
+    restart: unless-stopped
+    ports:
+      - "19999:19999"
+    environment:
+      - TZ=Asia/Kolkata
+      - NETDATA_DISABLE_CLOUD=1
+    volumes:
+      - netdata-config:/etc/netdata
+      - netdata-lib:/var/lib/netdata
+      - netdata-cache:/var/cache/netdata
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:19999"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  netdata-config:
+  netdata-lib:
+  netdata-cache:

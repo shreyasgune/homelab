@@ -12,22 +12,52 @@ services:
     volumes:
       - ./overseerr/config:/app/config
 
+  vpngate:
+    image: dperson/openvpn-client
+    container_name: vpngate
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Kolkata
+    volumes:
+      - ./vpn:/vpn
+    ports:
+      - "8080:8080"   # qBittorrent Web UI
+      - "6881:6881"
+      - "6881:6881/udp"
+
   qbit:
     image: linuxserver/qbittorrent:latest
     container_name: qbit
+    network_mode: "service:vpngate"
+    depends_on:
+      - vpngate
     restart: unless-stopped
-    ports:
-      - "8080:8080"   # Web UI
-      - "6881:6881"   # Torrent traffic
-      - "6881:6881/udp"
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Asia/Kolkata
-      - WEBUI_PORT=8080
+      # - WEBUI_PORT=8080
     volumes:
       - ${DOWNLOADS}:/downloads:rw
       - ${MEDIA}:/media:rw
+
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    container_name: prowlarr
+    restart: unless-stopped
+    ports:
+      - "9696:9696"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kolkata
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    volumes:
+      - ./prowlarr/config:/config
 
   sonarr:
     image: linuxserver/sonarr:latest
@@ -57,4 +87,44 @@ services:
     volumes:
       - ./radarr/config:/config
       - ${MOVIES}:/movies:rw
+      - ${DOWNLOADS}:/downloads:rw
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+    ports:
+      - "8191:8191"
+    environment:
+      - LOG_LEVEL=info
+      - TZ=Asia/Kolkata
+
+  lidarr:
+    image: linuxserver/lidarr:latest
+    container_name: lidarr
+    restart: unless-stopped
+    ports:
+      - "8686:8686"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kolkata
+    volumes:
+      - ./lidarr/config:/config
+      - ${MUSIC}:/music:rw
+      - ${DOWNLOADS}:/downloads:rw
+
+  readarr:
+    image: linuxserver/readarr:0.4.19-nightly
+    container_name: readarr
+    restart: unless-stopped
+    ports:
+      - "8787:8787"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kolkata
+    volumes:
+      - ./readarr/config:/config
+      - ${BOOKS}:/books:rw
       - ${DOWNLOADS}:/downloads:rw

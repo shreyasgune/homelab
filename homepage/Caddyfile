@@ -1,4 +1,61 @@
 kenora-pc.rya-pence.ts.net {
-    tls internal
-    reverse_proxy homepage:3000
+
+  # Homepage at /
+  reverse_proxy homepage:3000
+
+  handle_path /overseerr/* {
+    reverse_proxy overseerr:5055
+  }
+
+  handle_path /sonarr/* {
+    reverse_proxy sonarr:8989
+  }
+
+  handle_path /radarr/* {
+    reverse_proxy radarr:7878
+  }
+
+  handle_path /lidarr/* {
+    reverse_proxy lidarr:8686
+  }
+
+  handle_path /readarr/* {
+    reverse_proxy readarr:8787
+  }
+
+  handle_path /prowlarr/* {
+    reverse_proxy prowlarr:9696
+  }
+
+  handle_path /paperless/* {
+    reverse_proxy paperless:8000
+  }
+
+  handle_path /portainer/* {
+    reverse_proxy portainer:9000
+  }
+
+  handle_path /uptime/* {
+    reverse_proxy uptime-kuma:3001
+  }
+
+  handle_path /speedtest/* {
+    reverse_proxy speedtest:8765
+  }
+
+  handle_path /tautulli/* {
+    reverse_proxy tautulli:8181
+  }
+
+  # Calibre-Web (needs extra header)
+  handle_path /books/* {
+    reverse_proxy calibre-web:8083 {
+      header_up X-Script-Name /books
+    }
+  }
+
+  # Glances (websockets)
+  handle_path /glances/* {
+    reverse_proxy glances:61208
+  }
 }
