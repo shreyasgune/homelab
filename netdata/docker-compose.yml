@@ -10,6 +10,7 @@ services:
     environment:
       - TZ=Asia/Kolkata
       - NETDATA_DISABLE_CLOUD=1
+      - NETDATA_CORS_ALLOW_ORIGIN=* 
     volumes:
       - netdata-config:/etc/netdata
       - netdata-lib:/var/lib/netdata
